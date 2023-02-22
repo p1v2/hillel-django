@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 from pathlib import Path
 
 import dj_database_url
+
 from dotenv import load_dotenv
 import os
 
@@ -25,6 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY_PATH = os.path.join(BASE_DIR, "secret_key.txt")
 SECRET_KEY = open(os.path.join(BASE_DIR, "secret_key.txt")).read() \
     if os.path.exists(SECRET_KEY_PATH) else "SomeDummySecretKey"
@@ -32,7 +34,9 @@ SECRET_KEY = open(os.path.join(BASE_DIR, "secret_key.txt")).read() \
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG") == "True"
 
+
 ALLOWED_HOSTS = ["localhost", "hillel-django.herokuapp.com"]
+
 
 # Application definition
 
@@ -79,12 +83,14 @@ TEMPLATES = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'hillel_django.permissions.IsAdminOrReadOnly'
+        'hillel_django.permissions.IsSellerOrAdminOrReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
-    ]
+        'rest_framework.authentication.BasicAuthentication',
+        'hillel_django.authentication.SecretHeaderAuthentication',
+        'hillel_django.permissions.IsAdminOrReadOnly'
+    ],
 }
 
 WSGI_APPLICATION = 'hillel_django.wsgi.application'
@@ -112,9 +118,6 @@ else:
         'NAME': 'db.sqlite',
     }
 
-DATABASES = {
-    'default': DEFAULT_DATABASE
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators

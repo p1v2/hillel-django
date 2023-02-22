@@ -4,9 +4,10 @@ from books.models import Book, Country, Author
 
 
 class CountrySerializer(serializers.ModelSerializer):
+    count_selled_books = serializers.IntegerField()
     class Meta:
         model = Country
-        fields = ("id", "name")
+        fields = ("id", "name", "count_selled_books")
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -19,8 +20,8 @@ class AuthorSerializer(serializers.ModelSerializer):
 
 
 class BookSerializer(serializers.ModelSerializer):
-    country = CountrySerializer()
-    authors = AuthorSerializer(many=True)
+    country = CountrySerializer(read_only=True)
+    authors = AuthorSerializer(many=True, read_only=True)
 
     serializer_method_field = serializers.SerializerMethodField("calculate_field")
 
@@ -29,4 +30,6 @@ class BookSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ("id", "name", "country", "authors", "seller", "authors_string", "serializer_method_field")
+        fields = ("id", "name", "country", "authors", "seller", "price",
+                  "is_archived", "authors_string", "serializer_method_field")
+  
