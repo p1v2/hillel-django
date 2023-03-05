@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from multiprocessing.pool import ThreadPool
-from threading import Thread
+# from threading import Thread
 
 import requests
 from dotenv import load_dotenv

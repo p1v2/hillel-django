@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.authentication import BaseAuthentication
-from rest_framework.exceptions import AuthenticationFailed
+# from rest_framework.exceptions import AuthenticationFailed
 from rest_framework.request import Request
 
 
