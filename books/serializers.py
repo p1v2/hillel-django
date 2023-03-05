@@ -6,9 +6,10 @@ from customers.models import Customer
 
 
 class CountrySerializer(serializers.ModelSerializer):
+    count_selled_books = serializers.IntegerField(read_only=True)
     class Meta:
         model = Country
-        fields = ("id", "name")
+        fields = ("id", "name", "count_selled_books")
 
 
 class AuthorSerializer(serializers.ModelSerializer):

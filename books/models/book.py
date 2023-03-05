@@ -12,6 +12,7 @@ class Book(models.Model):
     country = models.ForeignKey(Country, null=True, on_delete=models.CASCADE)
     price = models.FloatField()
     seller = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    count_selled = models.IntegerField(null=True)
     count_sold = models.IntegerField(default=0)
 
     @property
