@@ -20,12 +20,13 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
 from products.views import registration_view
-from products.viewsets import ProductViewSet, CategoryViewSet
+from products.viewsets import ProductViewSet, CategoryViewSet,StoreViewSet, StoreInventoryViewSet
 
 router = DefaultRouter()
 router.register('products', ProductViewSet)
 router.register('categories', CategoryViewSet)
-
+router.register('stores', StoreViewSet)
+router.register('stores_inventory', StoreInventoryViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', obtain_auth_token),
