@@ -27,8 +27,7 @@ class CategoryViewSet(ModelViewSet):
 
 class StoreViewSet(ModelViewSet):
     queryset = Store.objects.all().prefetch_related('products')
-    authentication_classes = ()
-    permission_classes = ()
+
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -38,10 +37,9 @@ class StoreViewSet(ModelViewSet):
 
 class StoreInventoryViewSet(ModelViewSet):
     queryset = StoreInventory.objects.all().prefetch_related('product')
-    authentication_classes = ()
-    permission_classes = ()
+
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
-            return StoreInventorySerializerGet
+            return StoreInventorySerializerGET
         return StoreInventorySerializer
