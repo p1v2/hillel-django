@@ -20,21 +20,16 @@ from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
 from products.views import registration_view
-from products.viewsets import ProductViewSet, CategoryViewSet
+from products.viewsets import ProductViewSet, CategoryViewSet, OrderViewSet
 
 router = DefaultRouter()
 router.register('products', ProductViewSet)
 router.register('categories', CategoryViewSet)
+router.register('orders', OrderViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', obtain_auth_token),
     path('api/register/', registration_view),
     path('api/', include(router.urls)),
-
-    # YOUR PATTERNS
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    # Optional UI:
-    path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]

@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # Third-party apps (installed from pip)
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     # Local apps (user-defined)
     'products',
     'drf_spectacular',
@@ -141,5 +142,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
