@@ -1,2 +1,2 @@
 .idea/
- products/migrations/.pyc
+ products/migrations/__pycache__
