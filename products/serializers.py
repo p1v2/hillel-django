@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ModelSerializer
 
-from products.models import Product, Category, Tag
+from products.models import Product, Category, Tag, Market, StoreInventory
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -35,6 +35,17 @@ class CategoryWithProductsSerializer(CategorySerializer):
     class Meta(CategorySerializer.Meta):
         fields = CategorySerializer.Meta.fields + ('products',)
 
+class MarketSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Market
+        fields = ('__all__')
+
+class StoreInventorySerializer(serializers.ModelSerializer):
+    market = MarketSerializer()
+    product = ProductSerializer()
+    class Meta:
+        model = StoreInventory
+        fields = ('__all__')
 
 class RegistrationSerializer(ModelSerializer):
     token = serializers.SerializerMethodField(read_only=True)
@@ -46,3 +57,4 @@ class RegistrationSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ('username', 'password', 'token')
+
