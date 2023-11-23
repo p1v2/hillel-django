@@ -19,6 +19,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
+from telegram.views import accept_telegram_message
+
 from products.views import registration_view
 from products.viewsets import ProductViewSet, CategoryViewSet, OrderViewSet
 
@@ -32,4 +34,5 @@ urlpatterns = [
     path('api/auth/', obtain_auth_token),
     path('api/register/', registration_view),
     path('api/', include(router.urls)),
+    path('telegram/', accept_telegram_message),
 ]

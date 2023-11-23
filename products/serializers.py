@@ -4,6 +4,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ModelSerializer
 
 from products.models import Product, Category, Tag, Order, OrderProduct
+from products.tasks import order_created_task
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -67,4 +68,6 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(**validated_data)
         for order_product in order_products:
             OrderProduct.objects.create(order=order, **order_product)
+
+        order_created_task.delay(order.id)
         return order
