@@ -2,8 +2,8 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from products.models.category import Category
-from products.models.tag import Tag
+from undefApp.models.category import Category
+from undefApp.models.tag import Tag
 
 
 def non_negative_validator(value):
@@ -22,10 +22,11 @@ class Product(models.Model):
     # models.DO_NOTHING - don't do anything if category is deleted
     tags = models.ManyToManyField(Tag, related_name='products', blank=True)
 
-    orders = models.ManyToManyField('products.Order', through='products.OrderProduct')
+    orders = models.ManyToManyField('undefApp.Order', through='undefApp.OrderProduct')
+    stores = models.ManyToManyField('undefApp.Store', through='undefApp.StoreInventory')
 
     class Meta:
         unique_together = ('name', 'category')
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.category})'
