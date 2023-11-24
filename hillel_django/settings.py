@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
+    'b209-188-163-9-200.ngrok-free.app',
 ]
 
 # Application definition
@@ -42,6 +44,8 @@ INSTALLED_APPS = [
     # Third-party apps (installed from pip)
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
+    'celery',
     # Local apps (user-defined)
     'products',
     'drf_spectacular',
@@ -141,5 +145,17 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+}
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+
+CELERY_BEAT_SCHEDULE = {
+    'every_second': {
+        'task': 'products.tasks.every_second_task',
+        'schedule': 1.0,
+    },
 }
