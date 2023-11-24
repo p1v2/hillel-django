@@ -22,12 +22,21 @@ from rest_framework.authtoken.views import obtain_auth_token
 from telegram.views import accept_telegram_message
 
 from products.views import registration_view
+
+from products.viewsets import ProductViewSet, CategoryViewSet,StoreViewSet, StoreInventoryViewSet
+
 from products.viewsets import ProductViewSet, CategoryViewSet, OrderViewSet
+
 
 router = DefaultRouter()
 router.register('products', ProductViewSet)
 router.register('categories', CategoryViewSet)
+
+router.register('stores', StoreViewSet)
+router.register('stores_inventory', StoreInventoryViewSet)
+
 router.register('orders', OrderViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

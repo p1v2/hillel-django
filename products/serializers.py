@@ -3,8 +3,12 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ModelSerializer
 
+
+from products.models import Product, Category, Tag,Store,StoreInventory
+
 from products.models import Product, Category, Tag, Order, OrderProduct
 from products.tasks import order_created_task
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -24,6 +28,35 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = ('id', 'name', 'price', 'description', 'category', 'tags')
 
+class StoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Store
+        fields = ('id',"name","number_of_employees","description","date_joined","address","job_title","phone_number")
+
+class StoreInventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreInventory
+        fields = ('id',"name","store","description","product","quantity")
+
+
+
+class StoreProductsSerializer(StoreSerializer):
+    products = ProductSerializer(many=True)
+
+    class Meta(StoreSerializer.Meta):
+        fields = StoreSerializer.Meta.fields + ('products',)
+
+
+
+
+class StoreInventorySerializerGET(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = StoreInventory
+        fields = ('id', 'store', 'product', 'quantity', 'description','name')
+
+
 
 class ProductViewSerializer(ProductSerializer):
     category = CategorySerializer()
@@ -35,6 +68,12 @@ class CategoryWithProductsSerializer(CategorySerializer):
 
     class Meta(CategorySerializer.Meta):
         fields = CategorySerializer.Meta.fields + ('products',)
+
+class StoreProductsSerializer(StoreSerializer):
+    products = ProductSerializer(many=True)
+
+    class Meta(StoreSerializer.Meta):
+        fields = StoreSerializer.Meta.fields + ('products',)
 
 
 class RegistrationSerializer(ModelSerializer):

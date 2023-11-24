@@ -11,9 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
-load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,11 +87,11 @@ WSGI_APPLICATION = 'hillel_django.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("DB_NAME"),
-        'HOST': os.environ.get("DB_HOST"),
+        'NAME': "postgres",
+        'HOST': 'localhost',
         'PORT': '5432',
-        'USER': os.environ.get("DB_USER"),
-        'PASSWORD': os.environ.get("DB_PASSWORD"),
+        'USER': "postgres",
+        'PASSWORD': "",
     }
 }
 

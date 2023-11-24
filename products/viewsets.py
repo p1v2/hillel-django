@@ -1,3 +1,12 @@
+
+from rest_framework.authentication import BasicAuthentication
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+
+from hillel_django.authentication import MyCustomAuthentication
+from products.models import Product as Product, Category,Store,StoreInventory
+from rest_framework.permissions import IsAuthenticated
+from products.serializers import ProductSerializer, ProductViewSerializer, CategoryWithProductsSerializer,StoreProductsSerializer,StoreInventorySerializer,StoreInventorySerializerGET,StoreSerializer
+
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import LimitOffsetPagination, CursorPagination
@@ -9,6 +18,7 @@ from products.models import Product as Product, Category, Order
 from products.permissions import IsOwnerOrSuperAdmin
 from products.serializers import ProductSerializer, ProductViewSerializer, CategoryWithProductsSerializer, \
     OrderSerializer
+
 
 
 class ProductViewSet(ModelViewSet):
@@ -38,6 +48,26 @@ class CategoryViewSet(ModelViewSet):
     serializer_class = CategoryWithProductsSerializer
 
 
+
+class StoreViewSet(ModelViewSet):
+    queryset = Store.objects.all().prefetch_related('products')
+
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return StoreProductsSerializer
+        return StoreSerializer
+
+
+class StoreInventoryViewSet(ModelViewSet):
+    queryset = StoreInventory.objects.all().prefetch_related('product')
+
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return StoreInventorySerializerGET
+        return StoreInventorySerializer
+
 class OrderViewSet(ModelViewSet):
     serializer_class = OrderSerializer
     permission_classes = (IsAuthenticated, IsOwnerOrSuperAdmin,)
@@ -50,3 +80,4 @@ class OrderViewSet(ModelViewSet):
             return self.queryset.all()
         else:
             return self.queryset.filter(user=self.request.user)
+
