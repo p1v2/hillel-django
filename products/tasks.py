@@ -1,8 +1,10 @@
 from time import sleep
 
+from django.core.mail import send_mail, EmailMessage
+
 from hillel_django.celery import app
 from products.models import Order
-from telegram.client import send_message
+# from telegram.client import send_message
 
 
 @app.task(bind=True)
@@ -16,7 +18,46 @@ def order_created_task(self, order_id):
 
     message += f'User: {order.user.email}'
 
-    send_message(message)
+    # send_message(message)
+    # Send raw text email
+    # send_mail(
+    #     "New Order",
+    #     message,
+    #     "pavliuk96@gmail.com",
+    #     [order.user.email],
+    # )
+
+    html_message = f"""
+    <h1>Order {order_id} created!</h1>
+    <ul>
+    """
+
+    for order_product in order.order_products.all():
+        html_message += f'<li>{order_product.product.name} - {order_product.quantity}</li>'
+
+    html_message += f"""
+    </ul>
+    <p>User: {order.user.email}</p>
+    """
+
+    # Send html email
+    # send_mail(
+    #     "New Order",
+    #     message,
+    #     "pavliuk96@gmail.com",
+    #     [order.user.email],
+    #     html_message=html_message,
+    # )
+
+    # Send email with attachment
+    message = EmailMessage(
+        "New Order",
+        message,
+        "pavliuk96@gmail.com",
+        [order.user.email],
+    )
+    message.attach('person.jpeg', open('person.jpeg', 'rb').read(), 'image/jpeg')
+    message.send()
 
 
 @app.task(bind=True)

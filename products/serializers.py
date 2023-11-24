@@ -66,8 +66,11 @@ class OrderSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         order_products = validated_data.pop('order_products')
         order = Order.objects.create(**validated_data)
-        for order_product in order_products:
-            OrderProduct.objects.create(order=order, **order_product)
 
-        order_created_task.delay(order.id)
+        order_products_items = []
+        for order_product in order_products:
+            order_products_items.append(OrderProduct(order=order, **order_product))
+
+        OrderProduct.objects.bulk_create(order_products_items)
+
         return order

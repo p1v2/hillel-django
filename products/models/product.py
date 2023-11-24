@@ -1,6 +1,8 @@
 # Create your models here.
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import post_save, pre_save, post_delete
+from django.dispatch import receiver
 
 from products.models.category import Category
 from products.models.tag import Tag
@@ -29,3 +31,22 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# Signal after creating product
+@receiver(post_save, sender=Product)
+def product_saved(sender, instance, created, **kwargs):
+    if created:
+        print(f'{sender} {instance.name} was created')
+    else:
+        print(f'{sender} {instance.name} was updated')
+
+
+@receiver(pre_save, sender=Product)
+def product_pre_save(sender, instance, **kwargs):
+    print(f'{sender} {instance.name} is about to be saved')
+
+
+@receiver(post_delete, sender=Product)
+def product_post_delete(sender, instance, **kwargs):
+    print(f'{sender} {instance.name} was deleted')
