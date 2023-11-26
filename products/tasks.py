@@ -66,3 +66,15 @@ def every_second_task(self):
     sleep(10)
     print('End every second task!')
 
+
+@app.task(bind=True)
+def daily_order_check(self):
+    print(f"""It's your daily checkout of orders!
+          {1} orders were created yesterday.
+          The top 3 products were:
+            {'order.name1'};
+            {'order.name2'}
+            {'order.name3'}""")
+
+daily_order_check()
+
