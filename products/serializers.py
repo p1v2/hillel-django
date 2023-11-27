@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ModelSerializer
 
-from products.models import Product, Category, Tag, Order, OrderProduct
+from products.models import Product, Category, Tag, Order, OrderProduct, Store, StoreInventory
 from products.tasks import order_created_task
 
 
@@ -74,3 +74,9 @@ class OrderSerializer(serializers.ModelSerializer):
         OrderProduct.objects.bulk_create(order_products_items)
 
         return order
+
+
+class StoreInventorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreInventory
+        fields = ('product', 'quantity')
