@@ -1,10 +1,8 @@
-from time import sleep
+from django.core.mail import EmailMessage
 
-from django.core.mail import send_mail, EmailMessage
-
+from google_sheets.client import write_to_sheet
 from hillel_django.celery import app
-from products.models import Order
-# from telegram.client import send_message
+from products.models import Order, Product
 
 
 @app.task(bind=True)
@@ -61,8 +59,14 @@ def order_created_task(self, order_id):
 
 
 @app.task(bind=True)
-def every_second_task(self):
-    print("Start every second task!")
-    sleep(10)
-    print('End every second task!')
+def every_minute_task(self):
+    products = Product.objects.all()
 
+    product_data = []
+
+    for product in products:
+        product_data.append([product.id, product.name, product.price])
+
+    write_to_sheet(product_data)
+
+    return "Done!"

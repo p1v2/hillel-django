@@ -156,9 +156,9 @@ REST_FRAMEWORK = {
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 CELERY_BEAT_SCHEDULE = {
-    'every_second': {
-        'task': 'products.tasks.every_second_task',
-        'schedule': 1.0,
+    'write_to_sheets': {
+        'task': 'products.tasks.every_minute_task',
+        'schedule': 60.0,
     },
 }
 
