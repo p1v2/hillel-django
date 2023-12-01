@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from celery.schedules import crontab
 
 load_dotenv()
 
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     'celery',
     # Local apps (user-defined)
     'products',
+    'store',
     'drf_spectacular',
 ]
 
@@ -156,9 +158,9 @@ REST_FRAMEWORK = {
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 CELERY_BEAT_SCHEDULE = {
-    'every_second': {
-        'task': 'products.tasks.every_second_task',
-        'schedule': 1.0,
+    'collect_daily_order_stats': {
+        'task': 'store.tasks.collect_daily_order_stats',
+        'schedule': crontab(hour='10', minute='0', day_of_week='*'),
     },
 }
 
