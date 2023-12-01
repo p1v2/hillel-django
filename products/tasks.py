@@ -11,6 +11,7 @@ from datetime import datetime, timedelta
 
 @app.task(bind=True)
 def order_created_task(self, order_id):
+    pass
     # order = Order.objects.prefetch_related('products').select_related('user').get(id=order_id)
 
     # message = f'Order {order_id} created!\n'
@@ -19,7 +20,6 @@ def order_created_task(self, order_id):
     #     message += f'{order_product.product.name} - {order_product.quantity}\n'
 
     # message += f'User: {order.user.email}'
-    pass
     # send_message(message)
     # Send raw text email
     # send_mail(
@@ -82,8 +82,3 @@ def daily_order_check(self):
     for order in top_orders:
         message += f'{order["product__name"]} - {order["units"]} units;\n'
     print(message)
-    # print(
-    #       The top 3 products were:
-    #         'order.name1';
-    #         'order.name2'
-    #         'order.name3'""")

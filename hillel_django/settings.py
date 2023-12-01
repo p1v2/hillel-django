@@ -162,10 +162,10 @@ CELERY_BEAT_SCHEDULE = {
     #     'task': 'products.tasks.every_second_task',
     #     'schedule': 1.0,
     # },
-    # 'daily_10am': {
-    #     'task': 'products.tasks.daily_order_check',
-    #     'schedule': 5 #crontab(hour=10) 
-    # }
+    'daily_10am': {
+        'task': 'products.tasks.daily_order_check',
+        'schedule': crontab(hour=10) 
+    }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
