@@ -1,16 +1,16 @@
 import os
 
-from celery import Celery, shared_task
+from celery import Celery
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'hillel_django.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hillel_django.settings")
 
-app = Celery('hillel_django')
+app = Celery("hillel_django")
 
-app.config_from_object('django.conf:settings', namespace='CELERY')
+app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.autodiscover_tasks()
 
+
 @app.task(bind=True)
 def hello_world_task(self):
-    print('Hello World!')
-
+    print("Hello World!")

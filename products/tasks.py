@@ -7,14 +7,18 @@ from products.models import Order, Product
 
 @app.task(bind=True)
 def order_created_task(self, order_id):
-    order = Order.objects.prefetch_related('products').select_related('user').get(id=order_id)
+    order = (
+        Order.objects.prefetch_related("products")
+        .select_related("user")
+        .get(id=order_id)
+    )
 
-    message = f'Order {order_id} created!\n'
+    message = f"Order {order_id} created!\n"
 
     for order_product in order.order_products.all():
-        message += f'{order_product.product.name} - {order_product.quantity}\n'
+        message += f"{order_product.product.name} - {order_product.quantity}\n"
 
-    message += f'User: {order.user.email}'
+    message += f"User: {order.user.email}"
 
     html_message = f"""
     <h1>Order {order_id} created!</h1>
@@ -22,7 +26,9 @@ def order_created_task(self, order_id):
     """
 
     for order_product in order.order_products.all():
-        html_message += f'<li>{order_product.product.name} - {order_product.quantity}</li>'
+        html_message += (
+            f"<li>{order_product.product.name} - {order_product.quantity}</li>"
+        )
 
     html_message += f"""
     </ul>
@@ -36,7 +42,11 @@ def order_created_task(self, order_id):
         "pavliuk96@gmail.com",
         [order.user.email],
     )
-    message.attach('person.jpeg', open('person.jpeg', 'rb').read(), 'image/jpeg')
+    message.attach(
+        "person.jpeg",
+        open("person.jpeg", "rb").read(),
+        "image/jpeg"
+    )
     message.send()
 
 
@@ -56,12 +66,20 @@ def every_minute_task(self):
 
 @app.task(bind=True)
 def google_sheet_task(self, order_id):
-    order = Order.objects.prefetch_related('products').select_related('user').get(id=order_id)
+    order = (
+        Order.objects.prefetch_related("products")
+        .select_related("user")
+        .get(id=order_id)
+    )
 
     data = []
     for order_product in order.order_products.all():
         # Make like this: ["Coca cola - 2 - 200", "Total: 200"]
-        data.append(f'{order_product.product.name} - {order_product.quantity} - {round(order_product.product.price * order_product.quantity)}')
-        data.append(f'Total: {round(order.total_price)}')
+        data.append(
+            f"{order_product.product.name} - "
+            f"{order_product.quantity} - "
+            f"{round(order_product.product.price * order_product.quantity)}"
+        )
+        data.append(f"Total: {round(order.total_price)}")
 
     write_to_sheet(data)

@@ -4,25 +4,24 @@ from rest_framework.authtoken.models import Token
 from rest_framework.serializers import ModelSerializer
 
 from products.models import Product, Category, Tag, Order, OrderProduct
-from products.tasks import order_created_task
 
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
-        fields = ('id', 'name')
+        fields = ("id", "name")
 
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ('id', 'name', 'price', 'description', 'category', 'tags')
+        fields = ("id", "name", "price", "description", "category", "tags")
 
 
 class ProductViewSerializer(ProductSerializer):
@@ -34,7 +33,7 @@ class CategoryWithProductsSerializer(CategorySerializer):
     products = ProductSerializer(many=True)
 
     class Meta(CategorySerializer.Meta):
-        fields = CategorySerializer.Meta.fields + ('products',)
+        fields = CategorySerializer.Meta.fields + ("products",)
 
 
 class RegistrationSerializer(ModelSerializer):
@@ -46,13 +45,13 @@ class RegistrationSerializer(ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'password', 'token')
+        fields = ("username", "password", "token")
 
 
 class OrderProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderProduct
-        fields = ('product', 'quantity')
+        fields = ("product", "quantity")
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -62,8 +61,9 @@ class OrderSerializer(serializers.ModelSerializer):
 
     # Validate at least one order_product
     def validate(self, attrs):
-        if len(attrs['order_products']) == 0:
-            raise serializers.ValidationError('You must specify at least one product')
+        if len(attrs["order_products"]) == 0:
+            raise serializers.ValidationError(
+                "You must specify at least one product")
         return attrs
 
     def get_products_count(self, order):
@@ -71,15 +71,17 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'order_products', 'products_count')
+        fields = ("id", "user", "order_products", "products_count")
 
     def create(self, validated_data):
-        order_products = validated_data.pop('order_products')
+        order_products = validated_data.pop("order_products")
         order = Order.objects.create(**validated_data)
 
         order_products_items = []
         for order_product in order_products:
-            order_products_items.append(OrderProduct(order=order, **order_product))
+            order_products_items.append(
+                OrderProduct(order=order, **order_product)
+            )
 
         OrderProduct.objects.bulk_create(order_products_items)
 

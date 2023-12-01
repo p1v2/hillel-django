@@ -1,5 +1,3 @@
-from unittest import skip
-
 from django.contrib.auth.models import User
 from django.test import TestCase
 
@@ -8,25 +6,23 @@ from products.models import Product, Order
 
 class ViewsetsTestCase(TestCase):
     def setUp(self) -> None:
-        self.user = User.objects.create(username='test')
+        self.user = User.objects.create(username="test")
         self.client.force_login(self.user)
 
     def test_create_order(self):
-        cola = Product.objects.create(name='Coca cola', price=100)
-        pepsi = Product.objects.create(name='Pepsi', price=200)
+        cola = Product.objects.create(name="Coca cola", price=100)
+        pepsi = Product.objects.create(name="Pepsi", price=200)
 
-        response = self.client.post("/api/orders/", data={
-            "order_products": [
-                {
-                    "product": cola.id,
-                    "quantity": 2
-                },
-                {
-                    "product": pepsi.id,
-                    "quantity": 3
-                }
-            ]
-        }, content_type="application/json")
+        response = self.client.post(
+            "/api/orders/",
+            data={
+                "order_products": [
+                    {"product": cola.id, "quantity": 2},
+                    {"product": pepsi.id, "quantity": 3},
+                ]
+            },
+            content_type="application/json",
+        )
 
         self.assertEqual(201, response.status_code)
 
@@ -40,9 +36,14 @@ class ViewsetsTestCase(TestCase):
         self.assertEqual(order_products.get(product=pepsi).quantity, 3)
 
     def test_create_order_without_products(self):
-        response = self.client.post("/api/orders/", data={
-            "order_products": []
-        }, content_type="application/json")
+        response = self.client.post(
+            "/api/orders/",
+            data={"order_products": []},
+            content_type="application/json"
+        )
 
         self.assertEqual(400, response.status_code)
-        self.assertEqual("You must specify at least one product", response.json()['non_field_errors'][0])
+        self.assertEqual(
+            "You must specify at least one product",
+            response.json()["non_field_errors"][0],
+        )
