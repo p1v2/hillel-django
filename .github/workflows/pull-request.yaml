@@ -30,4 +30,4 @@ jobs:
       - name: Code coverage
         run: |
           coverage run --source='.' manage.py test
-          coverage report --fail-under=60
+          coverage report --fail-under=80
