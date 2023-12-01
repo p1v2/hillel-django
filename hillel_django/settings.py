@@ -158,14 +158,14 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 
 CELERY_BEAT_SCHEDULE = {
-    'every_second': {
-        'task': 'products.tasks.every_second_task',
-        'schedule': 1.0,
-    },
-    'daily_10am': {
-        'task': 'products.tasks.daily_order_check',
-        'schedule': 5 #crontab(hour=10) 
-    }
+    # 'every_second': {
+    #     'task': 'products.tasks.every_second_task',
+    #     'schedule': 1.0,
+    # },
+    # 'daily_10am': {
+    #     'task': 'products.tasks.daily_order_check',
+    #     'schedule': 5 #crontab(hour=10) 
+    # }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
