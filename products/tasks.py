@@ -2,7 +2,7 @@ from time import sleep
 
 from django.core.mail import send_mail, EmailMessage
 
-from hillel_django.celery import app
+from hillel_django.mycelery import app
 from products.models import Order
 # from telegram.client import send_message
 
@@ -69,12 +69,11 @@ def every_second_task(self):
 
 @app.task(bind=True)
 def daily_order_check(self):
-    print(f"""It's your daily checkout of orders!
-          {1} orders were created yesterday.
-          The top 3 products were:
-            {'order.name1'};
-            {'order.name2'}
-            {'order.name3'}""")
-
-daily_order_check()
-
+    for order in Order.objects.all().prefetch_related('products'):
+        print(order.created_at)
+    # print(f"""It's your daily checkout of orders!
+    #       1 orders were created yesterday.
+    #       The top 3 products were:
+    #         'order.name1';
+    #         'order.name2'
+    #         'order.name3'""")

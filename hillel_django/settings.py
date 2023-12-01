@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-
+from celery.schedules import crontab
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     # Local apps (user-defined)
     'products',
     'drf_spectacular',
+    'django_celery_beat'
 ]
 
 MIDDLEWARE = [
@@ -120,7 +121,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Kyiv'
 
 USE_I18N = True
 
@@ -155,11 +156,16 @@ REST_FRAMEWORK = {
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
+
 CELERY_BEAT_SCHEDULE = {
     'every_second': {
         'task': 'products.tasks.every_second_task',
         'schedule': 1.0,
     },
+    'daily_10am': {
+        'task': 'products.tasks.daily_order_check',
+        'schedule': 5 #crontab(hour=10) 
+    }
 }
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
