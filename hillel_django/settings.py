@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'celery',
     # Local apps (user-defined)
     'products',
-    'drf_spectacular',
 ]
 
 MIDDLEWARE = [

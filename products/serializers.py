@@ -58,10 +58,20 @@ class OrderProductSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     order_products = OrderProductSerializer(many=True)
     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    products_count = serializers.SerializerMethodField(read_only=True)
+
+    # Validate at least one order_product
+    def validate(self, attrs):
+        if len(attrs['order_products']) == 0:
+            raise serializers.ValidationError('You must specify at least one product')
+        return attrs
+
+    def get_products_count(self, order):
+        return order.order_products.count()
 
     class Meta:
         model = Order
-        fields = ('id', 'user', 'order_products')
+        fields = ('id', 'user', 'order_products', 'products_count')
 
     def create(self, validated_data):
         order_products = validated_data.pop('order_products')
