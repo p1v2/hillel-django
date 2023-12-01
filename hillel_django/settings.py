@@ -86,21 +86,22 @@ WSGI_APPLICATION = "hillel_django.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 postgres_db = {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": "5432",
-        "USER": os.environ.get("DB_USER"),
-        "PASSWORD": os.environ.get("DB_PASSWORD"),
+    "ENGINE": "django.db.backends.postgresql",
+    "NAME": os.environ.get("DB_NAME"),
+    "HOST": os.environ.get("DB_HOST"),
+    "PORT": "5432",
+    "USER": os.environ.get("DB_USER"),
+    "PASSWORD": os.environ.get("DB_PASSWORD"),
 }
 
 sqlite_db = {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    "ENGINE": "django.db.backends.sqlite3",
+    "NAME": BASE_DIR / "db.sqlite3",
 }
 
 DATABASES = {
-    "default": os.environ.get("USE_SQLITE", "True") and sqlite_db or postgres_db,
+    "default": os.environ.get("USE_SQLITE", "True") and
+    sqlite_db or postgres_db,
 }
 
 # Password validation
@@ -162,7 +163,6 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 10,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
-
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 
