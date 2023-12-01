@@ -6,21 +6,37 @@ CREDENTIALS_PATH = os.path.join(
     "credentials.json"
 )
 
-gc = gspread.service_account(filename=CREDENTIALS_PATH)
+
+class GoogleSheetsCredentials:
+    gc = None
+
+    def __init__(self):
+        self.credentials_path = CREDENTIALS_PATH
+
+    def __enter__(self):
+        if not self.gc:
+            self.gc = gspread.service_account(filename=self.credentials_path)
+
+        return self.gc
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
 
 
 def read_from_sheet():
-    sh = gc.open("Hillel Django")
-    worksheet = sh.sheet1
+    with GoogleSheetsCredentials() as gc:
+        sh = gc.open("Hillel Django")
+        worksheet = sh.sheet1
 
-    return worksheet.get_all_values()
+        return worksheet.get_all_values()
 
 
 def write_to_sheet(data):
-    sh = gc.open("Hillel Django")
-    worksheet = sh.sheet1
+    with GoogleSheetsCredentials() as gc:
+        sh = gc.open("Hillel Django")
+        worksheet = sh.sheet1
 
-    worksheet.append_rows(data)
+        worksheet.append_rows(data)
 
 
 if __name__ == "__main__":
