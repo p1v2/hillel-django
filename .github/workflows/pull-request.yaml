@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       USE_SQLITE: True
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.11
