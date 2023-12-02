@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
+from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -170,6 +171,10 @@ CELERY_BEAT_SCHEDULE = {
     "write_to_sheets": {
         "task": "products.tasks.every_minute_task",
         "schedule": 60.0,
+    },
+    'order_statistics': {
+        'task': 'order_statistics.tasks.gather_and_log_order_statistics',
+        'schedule': timedelta(days=1, hours=10),
     },
 }
 

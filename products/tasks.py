@@ -1,9 +1,13 @@
+import datetime
+from celery import shared_task
 from django.core.mail import EmailMessage
 
 from google_sheets.client import write_to_sheet
 from hillel_django.celery import app
-from products.models import Order, Product
+from products.models import Order, Product,OrderProduct
+import logging
 
+logger = logging.getLogger(__name__)
 
 @app.task(bind=True)
 def order_created_task(self, order_id):
@@ -83,3 +87,15 @@ def google_sheet_task(self, order_id):
         data.append(f"Total: {round(order.total_price)}")
 
     write_to_sheet(data)
+    
+@shared_task()
+def order_statistics():
+    
+    yesterday =  datetime.now() - datetime.timedelta(days=1)    
+    
+    total_orders = Order.objects.filter(created_at__range=yesterday).count()
+    logger.info(f"Total orders created in the last day: {total_orders}")
+    
+    top_products = OrderProduct.objects.values('product__name').annotate(total_ordered=Product.Sum('quantity')).order_by('-total_ordered')[:3]
+
+    logger.info(f"Statistics for the last day:\nTotal Orders: {total_orders}\nTop 3 Ordered Products: {top_products}")
