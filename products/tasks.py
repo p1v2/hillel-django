@@ -1,8 +1,10 @@
+import datetime as dt
 from django.core.mail import EmailMessage
 
 from google_sheets.client import write_to_sheet
 from hillel_django.celery import app
 from products.models import Order, Product
+
 
 
 @app.task(bind=True)
@@ -83,3 +85,29 @@ def google_sheet_task(self, order_id):
         data.append(f"Total: {round(order.total_price)}")
 
     write_to_sheet(data)
+
+
+@app.task(bind=True)
+def daily_stats(self):
+    day_before = dt.date.today() - dt.timedelta(days=1)
+    orders = Order.objects.filter(created_on=day_before)
+    order_count = orders.count()
+
+    print(f"Number of orders during {day_before}: {order_count}")
+
+    if order_count > 0:
+        product_quantity = {}
+        for order in orders:
+            for order_product in order.order_products.all():
+                product_id = order_product.product_id
+                if product_id in product_quantity:
+                    product_quantity[product_id] += order_product.quantity
+                else:
+                    product_quantity[product_id] = order_product.quantity
+        list_product_quantity = list(product_quantity.items())
+        list_product_quantity.sort(reverse=True, key=lambda x: x[1])
+        top3 = list_product_quantity[:3]
+        
+        for id, quantity in top3:
+            product = Product.objects.get(id=id)
+            print(f"{product.name} {quantity}")
