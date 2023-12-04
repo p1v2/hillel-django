@@ -6,6 +6,7 @@ from google_sheets.client import write_to_sheet
 from hillel_django.celery import app
 from products.models import Order, Product,OrderProduct
 import logging
+from django.db.models import Count
 
 logger = logging.getLogger(__name__)
 
@@ -93,9 +94,9 @@ def order_statistics():
     
     yesterday =  datetime.now() - datetime.timedelta(days=1)    
     
-    total_orders = Order.objects.filter(created_at__range=yesterday).count()
+    total_orders = Order.objects.filter(created_at__range=(yesterday, datetime.now())).count()
     logger.info(f"Total orders created in the last day: {total_orders}")
     
-    top_products = OrderProduct.objects.values('product__name').annotate(total_ordered=Product.Sum('quantity')).order_by('-total_ordered')[:3]
+    top_products = OrderProduct.objects.values('product__name').annotate(order_count=Count('product')).order_by('-order_count')[:3]
 
     logger.info(f"Statistics for the last day:\nTotal Orders: {total_orders}\nTop 3 Ordered Products: {top_products}")
