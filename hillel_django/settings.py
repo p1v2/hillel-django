@@ -25,7 +25,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "True").lower() == "true"
+
 
 ALLOWED_HOSTS = [
     "127.0.0.1",
@@ -89,7 +90,7 @@ postgres_db = {
     "ENGINE": "django.db.backends.postgresql",
     "NAME": os.environ.get("DB_NAME"),
     "HOST": os.environ.get("DB_HOST"),
-    "PORT": "5432",
+    "PORT": os.environ.get("DB_PORT", 5432),
     "USER": os.environ.get("DB_USER"),
     "PASSWORD": os.environ.get("DB_PASSWORD"),
 }
@@ -100,7 +101,7 @@ sqlite_db = {
 }
 
 DATABASES = {
-    "default": os.environ.get("USE_SQLITE", "True") and
+    "default": os.environ.get("USE_SQLITE", "False") == "True" and
     sqlite_db or postgres_db,
 }
 
@@ -164,7 +165,7 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 
 CELERY_BEAT_SCHEDULE = {
     "write_to_sheets": {
