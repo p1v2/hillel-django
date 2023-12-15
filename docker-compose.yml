@@ -19,7 +19,7 @@ services:
       - DEBUG=True
       - CELERY_BROKER_URL=redis://redis:6379/0
       - DB_PORT=5432
-    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    command: ["gunicorn", "-c", "gunicorn_config.py", "hillel_django.wsgi"]
     restart: always
   migrate:
     build:
