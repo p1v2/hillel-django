@@ -20,7 +20,7 @@ class Product(models.Model):
     # models.CASCADE - if category is deleted,
     # all products in this category will be deleted
     category = models.ForeignKey(
-        Category, on_delete=models.CASCADE, null=True, blank=True
+        Category, on_delete=models.CASCADE, null=True, blank=True, related_name="products"
     )
     # models.SET_NULL - if category is deleted,
     # all products in this category will be set to NULL
