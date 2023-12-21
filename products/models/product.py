@@ -26,6 +26,8 @@ class Product(models.Model):
 
     orders = models.ManyToManyField('products.Order', through='products.OrderProduct')
 
+    stores = models.ManyToManyField('products.Store', through='products.StoreInventory')
+
     class Meta:
         unique_together = ('name', 'category')
 
