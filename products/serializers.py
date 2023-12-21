@@ -7,6 +7,7 @@ from products.models import Product, Category, Tag, Order, OrderProduct, Store, 
 from products.tasks import order_created_task
 
 
+
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
