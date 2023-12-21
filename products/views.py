@@ -1,12 +1,15 @@
 from rest_framework import status
-from rest_framework.authtoken.models import Token
-from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.decorators import (
+    api_view,
+    permission_classes,
+    authentication_classes,
+)
 from rest_framework.response import Response
 
 from products.serializers import RegistrationSerializer
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([])
 @authentication_classes([])
 def registration_view(request):

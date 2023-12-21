@@ -5,12 +5,12 @@ from telegram.client import send_message
 
 
 # Create your views here.
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([])
 def accept_telegram_message(request):
-    chat_id = request.data['message']['chat']['id']
+    chat_id = request.data["message"]["chat"]["id"]
     text = "How are you?"
 
     send_message(text, chat_id)
 
-    return Response({'status': 'ok'})
+    return Response({"status": "ok"})
