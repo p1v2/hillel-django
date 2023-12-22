@@ -1,9 +1,13 @@
+import traceback
+
 import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from graphene_django.rest_framework.mutation import SerializerMutation
 
 from products.models import Product, Category
+from products.serializers import CategorySerializer
 
 
 class CategoryNode(DjangoObjectType):
@@ -29,7 +33,6 @@ class ProductNode(DjangoObjectType):
         )
 
 
-
 class Query(graphene.ObjectType):
     category = relay.Node.Field(CategoryNode)
     all_categories = DjangoFilterConnectionField(CategoryNode)
@@ -43,4 +46,56 @@ class Query(graphene.ObjectType):
         return Product.objects.get(name__icontains='Coca-Cola')
 
 
-schema = graphene.Schema(query=Query)
+class ProductType(DjangoObjectType):
+    class Meta:
+        model = Product
+
+
+class ProductMutation(graphene.Mutation):
+    class Arguments:
+        # The input arguments for this mutation
+        name = graphene.String(required=True)
+        price = graphene.Float(required=True)
+        description = graphene.String(required=False, default_value="")
+
+    # The class attributes define the response of the mutation
+    product = graphene.Field(ProductType)
+
+    # Validate data before creating a book
+    @classmethod
+    def validate(cls, name: str, price: float):
+        if not name:
+            raise Exception("Name is required")
+        if not price:
+            raise Exception("Price is required")
+
+    @classmethod
+    def mutate(cls, root, info, name, price, description=None):
+        try:
+            print("running mutation")
+            cls.validate(name, price)
+
+            product = Product.objects.create(
+                name=name,
+                price=price,
+                description=description,
+            )
+        except Exception as e:
+            traceback.print_exc()
+
+            return ProductMutation(product=None)
+
+        return ProductMutation(product=product)
+
+
+class CategoryMutation(SerializerMutation):
+    class Meta:
+        serializer_class = CategorySerializer
+
+
+class Mutation(graphene.ObjectType):
+    create_product = ProductMutation.Field()
+    create_category = CategoryMutation.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)

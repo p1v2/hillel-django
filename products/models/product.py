@@ -54,6 +54,11 @@ def product_pre_save(sender, instance, **kwargs):
     print(f"{sender} {instance.name} is about to be saved")
 
 
+@receiver(post_save, sender=Product)
+def product_post_save(sender, instance, **kwargs):
+    print(f"{sender} {instance.name} was saved")
+
+
 @receiver(post_delete, sender=Product)
 def product_post_delete(sender, instance, **kwargs):
     print(f"{sender} {instance.name} was deleted")
