@@ -52,6 +52,11 @@ INSTALLED_APPS = [
     "celery",
     'drf_yasg',
     "graphene_django",
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
     # Local apps (user-defined)
     "products",
 ]
@@ -193,3 +198,34 @@ EMAIL_USE_TLS = True
 GRAPHENE = {
     "SCHEMA": "hillel_django.schema.schema"
 }
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+            'https://www.googleapis.com/auth/spreadsheets',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        },
+    },
+    'github': {
+        'SCOPE': [
+            'user',
+            'repo',
+        ],
+    },
+}
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_STORE_TOKENS = True
+
+SITE_ID = 2
