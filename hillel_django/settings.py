@@ -34,6 +34,10 @@ ALLOWED_HOSTS = [
     "b209-188-163-9-200.ngrok-free.app",
 ] + os.environ.get("ALLOWED_HOSTS", "").split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+
+] + os.environ.get("ALLOWED_ORIGINS", "").split(",")
+
 
 # Application definition
 
@@ -57,6 +61,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.twitter',
     # Local apps (user-defined)
     "products",
 ]
@@ -70,6 +75,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
@@ -239,3 +245,7 @@ CACHES = {
         }
     }
 }
+
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_QUERY_EMAIL = True
