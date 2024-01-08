@@ -6,7 +6,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
 
-from products.models import Product, Category
+from products.models import Product, Category,Order,OrderProduct
 from products.serializers import CategorySerializer
 
 
@@ -87,6 +87,67 @@ class ProductMutation(graphene.Mutation):
 
         return ProductMutation(product=product)
 
+class OrderProductType(DjangoObjectType):
+    class Meta:
+        model = OrderProduct
+        fields = ('product', 'quantity')
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+        fields = ('products',)
+
+    products = graphene.List(OrderProductType)
+
+    def resolve_products(value_obj, info):
+        return value_obj.order_products.all()
+
+
+class OrderProductIn(graphene.InputObjectType):
+    product_id = graphene.Int()
+    quantity = graphene.Float()
+
+
+class OrderMutation(graphene.Mutation):
+    class Arguments:
+        # The input arguments for this mutation
+        products = graphene.List(OrderProductIn, required=True)
+        # The class attributes define the response of the mutation
+        order = graphene.Field(OrderType)
+
+    # Validate data before creating a order
+    @classmethod
+    def validate(cls, info, products: list,order:list):
+        if not products:
+            raise Exception("Products are required")
+        if not len(products):
+            raise Exception("At least a single product is required")
+        if not order:
+            raise Exception("order are required")
+
+    @classmethod
+    def mutate(cls, root, info, products,order):
+        try:
+            cls.validate(info, products,order)
+            order = Order.objects.create(
+                user_id=info.context.user.id,
+            )
+            OrderProduct.objects.bulk_create([
+                OrderProduct(
+                    order=order,
+                    product_id=max(p.product_id, 0),
+                    quantity=max(p.quantity, 0),  # Ensure quantity is non-negative
+                )
+                for p in products
+                if p.quantity >= 0 # Add a check for non-negative quantity
+                if p.product_id >= 0 # Add a check for non-negative quantity
+            ])
+        except Exception as e:
+            traceback.print_exc()
+            return OrderMutation(order=None)
+        return OrderMutation(order=order)
+
 
 class CategoryMutation(SerializerMutation):
     class Meta:
@@ -96,6 +157,6 @@ class CategoryMutation(SerializerMutation):
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
-
+    create_order = OrderMutation.Field()
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
