@@ -1,6 +1,8 @@
 import traceback
 
 import graphene
+from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
@@ -143,9 +145,21 @@ class OrderMutation(graphene.Mutation):
                 if p.quantity >= 0 # Add a check for non-negative quantity
                 if p.product_id >= 0 # Add a check for non-negative quantity
             ])
-        except Exception as e:
+        except IntegrityError as integrity_error:
+            # Обработка нарушения целостности базы данных (например, уникальное ограничение)
             traceback.print_exc()
             return OrderMutation(order=None)
+
+        except ValidationError as validation_error:
+            # Обработка ошибки проверки (вам может потребоваться определить ValidationError)
+            traceback.print_exc()
+            return OrderMutation(order=None)
+
+        except Exception as e:
+            # Обработка других конкретных исключений при необходимости
+            traceback.print_exc()
+            return OrderMutation(order=None)
+
         return OrderMutation(order=order)
 
 
