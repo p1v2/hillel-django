@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.twitter',
     # Local apps (user-defined)
     "products",
 ]
@@ -221,7 +222,27 @@ SOCIALACCOUNT_PROVIDERS = {
             'repo',
         ],
     },
+'twitter': {
+        'APP': {
+            'consumer_key': 'Ваш_Ключ_Потребителя',
+            'secret_key': 'Ваш_Секретный_Ключ',
+        }
+    }
 }
+
+
+#Зарегистрируйте приложение на Twitter Developer:
+#    Перейдите на Twitter Developer.
+#    Нажмите на "Create App" (Создать приложение).
+#    Заполните информацию о вашем приложении (название, описание, веб-сайт).
+#    Прочтите и согласитесь с условиями использования Twitter API.
+#    Нажмите на "Create" (Создать) для завершения регистрации приложения.
+#
+#Получите ключи доступа (API Key и API Secret Key):
+#
+#    После регистрации приложения, перейдите в раздел "Keys and tokens" (Ключи и токены).
+#    Там вы найдете "API key" (API-ключ) и "API secret key" (Секретный API-ключ). Эти ключи будут использоваться в вашем приложении Django.
+
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -229,3 +250,8 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_STORE_TOKENS = True
 
 SITE_ID = 2
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_USERNAME_REQUIRED = False
