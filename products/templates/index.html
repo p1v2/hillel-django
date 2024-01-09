@@ -3,6 +3,12 @@
 <html>
 <body>
   <h1>Hillel Django Social Auth</h1>
+    {% if messages %}
+    {% for message in messages %}
+      <p style="color: red;">{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+
   {% if user.is_authenticated %}
     <p>Logged in as {{ user.username }}</p>
     <a href="{% provider_login_url 'google' process='connect' %}">Connect Google account</a>
