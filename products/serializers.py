@@ -1,3 +1,5 @@
+from time import sleep
+
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.authtoken.models import Token
@@ -19,9 +21,15 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    time_consuming_field = serializers.SerializerMethodField(read_only=True)
+
+    def get_time_consuming_field(self, product):
+        sleep(0.1)
+        return product.name + " " + product.description
+
     class Meta:
         model = Product
-        fields = ("id", "name", "price", "description", "category", "tags")
+        fields = ("id", "name", "price", "description", "category", "tags", "time_consuming_field")
 
 
 class ProductViewSerializer(ProductSerializer):

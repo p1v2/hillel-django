@@ -229,3 +229,13 @@ LOGOUT_REDIRECT_URL = '/'
 SOCIALACCOUNT_STORE_TOKENS = True
 
 SITE_ID = 2
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': os.environ.get("REDIS_URL"),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}

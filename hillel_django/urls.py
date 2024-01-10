@@ -27,7 +27,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from telegram.views import accept_telegram_message
 
-from products.views import registration_view
+from products.views import registration_view, github_user_view
 from products.viewsets import ProductViewSet, CategoryViewSet, OrderViewSet
 
 router = DefaultRouter()
@@ -61,4 +61,5 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html")),
     path("accounts/", include("allauth.urls")),
     path("logout", LogoutView.as_view()),
+    path("github", github_user_view)
 ]

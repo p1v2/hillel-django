@@ -1,4 +1,5 @@
 # Create your models here.
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save, pre_save, post_delete
@@ -33,9 +34,6 @@ class Product(models.Model):
         "products.Order", through="products.OrderProduct"
     )
 
-    class Meta:
-        unique_together = ("name", "category")
-
     def __str__(self):
         return self.name
 
@@ -43,11 +41,21 @@ class Product(models.Model):
 # Signal after creating product
 @receiver(post_save, sender=Product)
 def product_saved(sender, instance, created, **kwargs):
+    cache_keys = "/api/products/-list*"
+    cache.delete_pattern(cache_keys)
+    print("cache cleared")
+
     if created:
         print(f"{sender} {instance.name} was created")
     else:
         print(f"{sender} {instance.name} was updated")
 
+
+@receiver(post_delete, sender=Product)
+def product_deleted(sender, instance, **kwargs):
+    cache_keys = "/api/products/-list*"
+    cache.delete_pattern(cache_keys)
+    print("cache cleared")
 
 @receiver(pre_save, sender=Product)
 def product_pre_save(sender, instance, **kwargs):
