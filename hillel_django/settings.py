@@ -230,6 +230,7 @@ SOCIALACCOUNT_STORE_TOKENS = True
 
 SITE_ID = 2
 
+# Redis cache
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -239,3 +240,85 @@ CACHES = {
         }
     }
 }
+
+# Different cache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#     }
+# }
+
+# Memcached
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': os.environ.get("MEMCACHED_URL"),
+#     }
+# }
+
+# File-based cache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': BASE_DIR / 'cache',
+#     }
+# }
+
+# # Dummy cache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+#     }
+# }
+
+# # Database cache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#         'LOCATION': 'my_cache_table',
+#     }
+# }
+
+# # PyMemcache
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
+#         'LOCATION': os.environ.get("MEMCACHED_URL"),
+#     }
+# }
+
+
+# CACHES = {
+#     # default redis
+#     # and custom for memcached
+#     "default": {
+#         "BACKEND": "django_redis.cache.RedisCache",
+#         "LOCATION": os.environ.get("REDIS_URL"),
+#         "OPTIONS": {
+#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         }
+#     },
+#     "custom": {
+#         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+#         "LOCATION": os.environ.get("MEMCACHED_URL"),
+#     }
+# }
+
+# Select cache
+# from django.core.cache import get_cache, cache
+# cache = get_cache('custom')
+
+# Multiple databases
+# DATABASES = {
+#     'default': { ... },
+#     'users': { ... },
+# }
+
+# class User(models.Model):
+#     username = models.CharField(max_length=255)
+#
+#     class Meta:
+#         db_table = 'users'
+#         managed = False
+#         app_label = 'users'
+#         db_alias = 'users'
