@@ -19,8 +19,6 @@ class OrderAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    fields = ("name", "price", "category", "tags")
-
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("category")
 
