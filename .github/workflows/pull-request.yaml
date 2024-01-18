@@ -1,4 +1,4 @@
-name: Django Pull Request Check
+name: Pull Request Check
 
 on:
   pull_request:
