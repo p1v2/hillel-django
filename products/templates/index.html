@@ -1,14 +1,15 @@
 {% load socialaccount %}
 <html>
 <body>
-<h1>Hillel Django Google Auth</h1>
-{% if user.is_authenticated %}
-  <p>Logged in as {{ user.username }}</p>
-  <a href="{% provider_login_url "google" process="connect" %}">connect Google account</a>
-{% else %}
-  <a href="{% provider_login_url 'google' %}">Login with Google</a>
-  <a href="{% provider_login_url 'github' %}">Login with Github</a>
-{% endif %}
-
+  <h1>Hillel Django Social Auth</h1>
+  {% if user.is_authenticated %}
+    <p>Logged in as {{ user.username }}</p>
+    {% comment %} <a href="{% provider_login_url 'google' process='connect' %}">Connect Google account</a> {% endcomment %}
+    <a href="{% provider_login_url 'discord' process='connect' %}">Connect Discord account</a>
+  {% else %}
+    <a href="{% provider_login_url 'google' %}">Login with Google</a><br>
+    <a href="{% provider_login_url 'github' %}">Login with Github</a><br>
+    <a href="{% provider_login_url 'discord' %}">Login with Discord</a>
+  {% endif %}
 </body>
 </html>
