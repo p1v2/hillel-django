@@ -22,7 +22,7 @@ def non_negative_validator(value):
 class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField(validators=[non_negative_validator])
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     # models.CASCADE - if category is deleted,
     # all products in this category will be deleted
     category = models.ForeignKey(
@@ -33,7 +33,7 @@ class Product(models.Model):
     # models.RESTRICT - don't allow to delete
     # category if there are products in this category
     # models.DO_NOTHING - don't do anything if category is deleted
-    tags = models.ManyToManyField(Tag, related_name="products", blank=True)
+    tags = models.ManyToManyField(Tag, related_name="products",blank=True)
 
     image = models.ImageField(upload_to="products", null=True, blank=True)
 
@@ -84,11 +84,11 @@ def product_saved(sender, instance, created, **kwargs):
         print(f"{sender} {instance.name} was updated")
 
 
-@receiver(post_delete, sender=Product)
-def product_deleted(sender, instance, **kwargs):
-    cache_keys = "/api/products/-list*"
-    cache.delete_pattern(cache_keys)
-    print("cache cleared")
+# @receiver(post_delete, sender=Product)
+# def product_deleted(sender, instance, **kwargs):
+#     cache_keys = "/api/products/-list*"
+#     cache.delete_pattern(cache_keys)
+#     print("cache cleared")
 
 @receiver(pre_save, sender=Product)
 def product_pre_save(sender, instance, **kwargs):

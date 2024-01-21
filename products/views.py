@@ -1,5 +1,8 @@
 import requests
 from django.core.cache import cache
+
+from django.shortcuts import redirect
+
 from rest_framework import status
 from rest_framework.decorators import (
     api_view,
@@ -46,3 +49,12 @@ def github_user_view(request):
     print("From github")
 
     return Response(github_response.json())
+
+
+discord_url4 = 'https://discord.com/api/oauth2/authorize?client_id=1197645107713818624&response_type=code&redirect_uri=http%3A%2F%2F127.0.0.1%3A8000%2Faccounts%2Fdiscord%2Flogin%2Fcallback%2F&scope=identify'
+
+def discord_view(request):
+    return redirect(discord_url4)
+
+def error_view(request):
+    return Response()

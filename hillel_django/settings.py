@@ -52,12 +52,14 @@ INSTALLED_APPS = [
     "celery",
     'drf_yasg',
     "graphene_django",
+    'storages',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
-    'storages',
+    #My provider choice
+    'allauth.socialaccount.providers.discord',
     # Local apps (user-defined)
     "products",
 ]
@@ -71,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
@@ -222,6 +225,13 @@ SOCIALACCOUNT_PROVIDERS = {
             'repo',
         ],
     },
+    'discord': {
+        'APP': {
+            'client_id': os.environ.get('CLIENT_ID'),
+            'secret': os.environ.get('SECRET_KEY'),
+        }
+        
+    }
 }
 
 LOGIN_REDIRECT_URL = '/'
