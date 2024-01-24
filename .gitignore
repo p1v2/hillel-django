@@ -2,3 +2,5 @@
 .env
 *.pyc
 credentials.json
+.vscode
+venv
