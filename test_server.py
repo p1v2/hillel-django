@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import requests
-
+ 
 
 def test_server():
     url = 'http://localhost:8000/api/products'

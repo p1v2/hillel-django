@@ -34,6 +34,10 @@ ALLOWED_HOSTS = [
     "b209-188-163-9-200.ngrok-free.app",
 ] + os.environ.get("ALLOWED_HOSTS", "").split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+
+] + os.environ.get("ALLOWED_ORIGINS", "").split(",")
+
 
 # Application definition
 
@@ -57,7 +61,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
-    'storages',
+    'allauth.socialaccount.providers.twitter',
     # Local apps (user-defined)
     "products",
 ]
@@ -71,6 +75,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
@@ -231,7 +236,6 @@ SOCIALACCOUNT_STORE_TOKENS = True
 
 SITE_ID = 2
 
-# Redis cache
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
@@ -242,104 +246,6 @@ CACHES = {
     }
 }
 
-# Different cache
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-#     }
-# }
-
-# Memcached
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-#         'LOCATION': os.environ.get("MEMCACHED_URL"),
-#     }
-# }
-
-# File-based cache
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-#         'LOCATION': BASE_DIR / 'cache',
-#     }
-# }
-
-# # Dummy cache
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
-# }
-
-# # Database cache
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-#         'LOCATION': 'my_cache_table',
-#     }
-# }
-
-# # PyMemcache
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-#         'LOCATION': os.environ.get("MEMCACHED_URL"),
-#     }
-# }
-
-
-# CACHES = {
-#     # default redis
-#     # and custom for memcached
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": os.environ.get("REDIS_URL"),
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#         }
-#     },
-#     "custom": {
-#         "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
-#         "LOCATION": os.environ.get("MEMCACHED_URL"),
-#     }
-# }
-
-# Select cache
-# from django.core.cache import get_cache, cache
-# cache = get_cache('custom')
-
-# Multiple databases
-# DATABASES = {
-#     'default': { ... },
-#     'users': { ... },
-# }
-
-# class User(models.Model):
-#     username = models.CharField(max_length=255)
-#
-#     class Meta:
-#         db_table = 'users'
-#         managed = False
-#         app_label = 'users'
-#         db_alias = 'users'
-
-AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-AWS_STORAGE_BUCKET_NAME = "hillel-django-static"
-
-AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
-# AWS_DEFAULT_ACL = "public-read"
-AWS_S3_OBJECT_PARAMETERS = {
-    "CacheControl": "max-age=86400",
-}
-
-# s3 static settings
-STATIC_LOCATION = "static"
-STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{STATIC_LOCATION}/"
-STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-
-# s3 public media settings
-PUBLIC_MEDIA_LOCATION = "media"
-MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
-DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_QUERY_EMAIL = True
