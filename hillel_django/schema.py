@@ -6,7 +6,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
 
-from products.models import Product, Category, OrderProduct, Order
+from products.models import Product, Category
 from products.serializers import CategorySerializer
 
 
@@ -14,7 +14,7 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = ['name', 'products']
-        interfaces = (relay.Node,)
+        interfaces = (relay.Node, )
 
 
 class ProductNode(DjangoObjectType):
@@ -26,7 +26,7 @@ class ProductNode(DjangoObjectType):
             'category': ['exact'],
             'category__name': ['exact'],
         }
-        interfaces = (relay.Node,)
+        interfaces = (relay.Node, )
         fields = (
             'id',
             'name',
@@ -93,53 +93,9 @@ class CategoryMutation(SerializerMutation):
         serializer_class = CategorySerializer
 
 
-class OrderType(DjangoObjectType):
-    class Meta:
-        model = OrderProduct
-
-
-class OrderMutation(graphene.Mutation):
-    class Arguments:
-        product = graphene.ID(required=False)
-        order = graphene.ID(required=True)
-        quantity = graphene.Int(required=True)
-
-    order = graphene.Field(OrderType)
-
-    @classmethod
-    def validate(cls, product, order, quantity: int):
-        if not product:
-            raise Exception("Name is required")
-        if not order:
-            raise Exception("Price is required")
-        if not quantity:
-            raise Exception('quantity is required')
-
-    @classmethod
-    def mutate(cls, root, info, product, order, quantity):
-        try:
-            print("running mutation")
-            cls.validate(product, order, quantity)
-            order_instance = Order.objects.get(id=order)
-            product_instance = Product.objects.get(id=product)
-
-            order = OrderProduct.objects.create(
-                product=product_instance,
-                order=order_instance,
-                quantity=quantity,
-            )
-        except Exception as e:
-            traceback.print_exc()
-
-            return OrderMutation(order=None)
-
-        return OrderMutation(order=order)
-
-
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
-    create_order = OrderMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
