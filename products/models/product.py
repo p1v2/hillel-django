@@ -8,11 +8,6 @@ from django.dispatch import receiver
 from products.models.category import Category
 from products.models.tag import Tag
 
-from PIL import Image
-from io import BytesIO
-from django.core.files.uploadedfile import SimpleUploadedFile
-import os
-
 
 def non_negative_validator(value):
     if value <= 0:
@@ -35,37 +30,9 @@ class Product(models.Model):
     # models.DO_NOTHING - don't do anything if category is deleted
     tags = models.ManyToManyField(Tag, related_name="products", blank=True)
 
-    image = models.ImageField(upload_to="products", null=True, blank=True)
-
     orders = models.ManyToManyField(
         "products.Order", through="products.OrderProduct"
     )
-
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-
-        # Compless image to 200x200 (convert to JPEG)
-        if self.image:
-            image = Image.open(self.image)
-            image.thumbnail((200, 200))
-
-            thumb_name, thumb_extension = os.path.splitext(self.image.name)
-
-            thumb_filename = thumb_name + "_thumb" + ".jpg"
-
-            temp_thumb = BytesIO()
-            image.convert("RGB").save(temp_thumb, format='JPEG')
-            temp_thumb.seek(0)
-
-            # set save=False, otherwise it will run in an infinite loop
-            self.image.save(thumb_filename,
-                            SimpleUploadedFile(
-                                thumb_filename,
-                                temp_thumb.read(),
-                                content_type=f"image/jpeg",
-                            ),
-                            save=False)
-            super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
