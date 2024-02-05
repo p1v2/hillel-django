@@ -6,7 +6,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
 
-from products.models import Product, Category
+from products.models import Product, Category, Order, OrderProduct
 from products.serializers import CategorySerializer
 
 
@@ -88,6 +88,44 @@ class ProductMutation(graphene.Mutation):
         return ProductMutation(product=product)
 
 
+class OrderInput(graphene.InputObjectType):
+    products = graphene.List(graphene.ID, required=True)
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+        fields = (
+            'id',
+            'user',
+            'products',
+            'total_price',
+            'bill',
+        )
+
+
+class CreateOrder(graphene.Mutation):
+    class Arguments:
+        order_input = OrderInput(required=True)
+
+    order = graphene.Field(OrderType)
+
+    @staticmethod
+    def mutate(root, info, order_input):
+        if not order_input.products:
+            raise Exception('An order must contain at least one product.')
+
+        order = Order.objects.create()
+
+        for product_id in order_input.products:
+            product = Product.objects.get(id=product_id)
+            OrderProduct.objects.create(order=order, product=product)
+
+        order.save()
+
+        return order
+
+
 class CategoryMutation(SerializerMutation):
     class Meta:
         serializer_class = CategorySerializer
@@ -96,6 +134,7 @@ class CategoryMutation(SerializerMutation):
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
+    create_order = CreateOrder.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
