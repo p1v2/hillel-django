@@ -9,6 +9,8 @@ from graphene_django.rest_framework.mutation import SerializerMutation
 from products.models import Product, Category, Order, OrderProduct
 from products.serializers import CategorySerializer
 
+from django.db import transaction
+
 
 class CategoryNode(DjangoObjectType):
     class Meta:
@@ -110,20 +112,30 @@ class CreateOrder(graphene.Mutation):
 
     order = graphene.Field(OrderType)
 
+    def __init__(self, order):
+        self.order = order
+
     @staticmethod
     def mutate(root, info, order_input):
         if not order_input.products:
             raise Exception('An order must contain at least one product.')
 
-        order = Order.objects.create()
+        with transaction.atomic():
+            order = Order.objects.create()
+            order_products = []
 
         for product_id in order_input.products:
-            product = Product.objects.get(id=product_id)
-            OrderProduct.objects.create(order=order, product=product)
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                raise Exception(f'Product with id {product_id} does not exist.')
 
+            order_products.append(OrderProduct(order=order, product=product))
+
+        OrderProduct.objects.bulk_create(order_products)
         order.save()
 
-        return order
+        return CreateOrder(order=order)
 
 
 class CategoryMutation(SerializerMutation):
