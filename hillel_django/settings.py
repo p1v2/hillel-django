@@ -32,7 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "b209-188-163-9-200.ngrok-free.app",
-    "67e6-78-27-185-69.ngrok-free.app"
+    "832d-78-27-185-69.ngrok-free.app"
 ] + os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
@@ -74,6 +74,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "hillel_django.auth_middleware.AuthenticationMiddleware",
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
