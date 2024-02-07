@@ -6,8 +6,10 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
 
-from products.models import Product, Category
+from products.models import Product, Category, Order, OrderProduct
 from products.serializers import CategorySerializer
+
+from django.db import transaction
 
 
 class CategoryNode(DjangoObjectType):
@@ -88,6 +90,54 @@ class ProductMutation(graphene.Mutation):
         return ProductMutation(product=product)
 
 
+class OrderInput(graphene.InputObjectType):
+    products = graphene.List(graphene.ID, required=True)
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+        fields = (
+            'id',
+            'user',
+            'products',
+            'total_price',
+            'bill',
+        )
+
+
+class CreateOrder(graphene.Mutation):
+    class Arguments:
+        order_input = OrderInput(required=True)
+
+    order = graphene.Field(OrderType)
+
+    def __init__(self, order):
+        self.order = order
+
+    @staticmethod
+    def mutate(root, info, order_input):
+        if not order_input.products:
+            raise Exception('An order must contain at least one product.')
+
+        with transaction.atomic():
+            order = Order.objects.create()
+            order_products = []
+
+        for product_id in order_input.products:
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                raise Exception(f'Product with id {product_id} does not exist.')
+
+            order_products.append(OrderProduct(order=order, product=product))
+
+        OrderProduct.objects.bulk_create(order_products)
+        order.save()
+
+        return CreateOrder(order=order)
+
+
 class CategoryMutation(SerializerMutation):
     class Meta:
         serializer_class = CategorySerializer
@@ -96,6 +146,7 @@ class CategoryMutation(SerializerMutation):
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
+    create_order = CreateOrder.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
