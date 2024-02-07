@@ -32,6 +32,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost",
     "b209-188-163-9-200.ngrok-free.app",
+    "67e6-78-27-185-69.ngrok-free.app"
 ] + os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 
@@ -39,6 +40,7 @@ ALLOWED_HOSTS = [
 
 INSTALLED_APPS = [
     # Django default apps
+    "sslserver",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -57,6 +59,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.amazon',
     'storages',
     # Local apps (user-defined)
     "products",
@@ -67,7 +70,7 @@ MIDDLEWARE = [
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
+    #"django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -222,9 +225,22 @@ SOCIALACCOUNT_PROVIDERS = {
             'repo',
         ],
     },
+    'facebook': {
+        'APP': {
+            'client_id': os.environ.get("FACEBOOK_APP_ID"),
+            'secret': os.environ.get("FACEBOOK_APP_SECRET"),
+            # 'key': os.environ.get("FACEBOOK_APP_KEY"),
+        }
+    },
+    'amazon': {
+        'APP': {
+            'client_id': os.environ.get("AMAZON_APP_ID"),
+            'secret': os.environ.get("AMAZON_APP_SECRET"),
+        }
+    }
 }
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/profile/'
 LOGOUT_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_STORE_TOKENS = True
@@ -343,3 +359,8 @@ STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+
+SOCIAL_AUTH_FACEBOOK_KEY = '1549593955826150'
+SOCIAL_AUTH_FACEBOOK_SECRET = 'fa92f3ec217e27a95060ac28debcc8d5'
+SOCIAL_AUTH_FACEBOOK_REDIRECT_URL = 'http://localhost:8000/accounts/facebook/login/callback/'

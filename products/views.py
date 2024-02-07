@@ -1,5 +1,9 @@
 import requests
 from django.core.cache import cache
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render
+
 from rest_framework import status
 from rest_framework.decorators import (
     api_view,
@@ -46,3 +50,7 @@ def github_user_view(request):
     print("From github")
 
     return Response(github_response.json())
+
+@login_required
+def profile_view(request):
+    return render(request, "profile.html", {"user": request.user})
