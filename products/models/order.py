@@ -6,7 +6,8 @@ class Order(models.Model):
     products = models.ManyToManyField(
         "products.Product", through="products.OrderProduct"
     )
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    
     @property
     def total_price(self):
         return self.order_products.aggregate(

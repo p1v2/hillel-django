@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import os
 from pathlib import Path
+from celery.schedules import crontab
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -186,6 +187,10 @@ CELERY_BEAT_SCHEDULE = {
     "write_to_sheets": {
         "task": "products.tasks.every_minute_task",
         "schedule": 60.0,
+    },
+    'everyday_at_10_am': {
+        'task': 'products.tasks.everyday_calculations_of_orders',
+        'schedule': crontab(hour=10, minute=0),
     },
 }
 
