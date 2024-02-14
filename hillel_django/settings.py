@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.gitlab',
     'storages',
     # Local apps (user-defined)
     "products",
@@ -71,6 +72,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
@@ -222,14 +224,26 @@ SOCIALACCOUNT_PROVIDERS = {
             'repo',
         ],
     },
+    "gitlab": {
+        "SCOPE": ["api"],
+        "APPS": [
+            {
+                "client_id": os.environ.get("GITLAB_ID"),
+                "secret": os.environ.get("GITLAB_KEY"),
+                "settings": {
+                    "gitlab_url": "https://gitlab.com",
+                }
+            }
+        ]
+    },
 }
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/admin'
 LOGOUT_REDIRECT_URL = '/'
 
 SOCIALACCOUNT_STORE_TOKENS = True
 
-SITE_ID = 2
+SITE_ID = 1
 
 # Redis cache
 CACHES = {
