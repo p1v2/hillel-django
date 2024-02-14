@@ -8,9 +8,6 @@ from rest_framework.decorators import (
 )
 from rest_framework.response import Response
 
-from products.serializers import RegistrationSerializer
-
-
 @api_view(["POST"])
 @permission_classes([])
 @authentication_classes([])
