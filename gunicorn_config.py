@@ -2,16 +2,16 @@ import os
 from os import cpu_count
 
 # Bind
-port = os.environ.get("PORT", 8000)
+port = os.environ.get("PORT", 8001)
 bind = f"0.0.0.0:{port}"
 
 # Worker processes
-workers = 1
+workers = 4
 worker_class = "sync"
 
 
 # Threads per worker
-threads = 1
+threads = 4
 
 # Logging
 loglevel = "debug"

@@ -6,7 +6,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
 
-from products.models import Product, Category
+from products.models import Product, Category, Order
 from products.serializers import CategorySerializer
 
 
@@ -49,6 +49,37 @@ class Query(graphene.ObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
+
+
+class OrderProductObjectType(graphene.InputObjectType):
+    product_id = graphene.Int()
+    quantity = graphene.Int()
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+
+class OrderMutation(graphene.Mutation):
+    class Arguments:
+        order_products = graphene.List(OrderProductObjectType, required=True)
+        user_id = graphene.Int(required=True)
+
+    order = graphene.Field(OrderType)
+
+    @classmethod
+    def mutate(cls, root, info, order_products, user_id):
+        try:
+            order = Order.objects.create(user_id=user_id)
+            for order_product in order_products:
+                order.order_products.create(
+                    product_id=order_product.product_id,
+                    quantity=order_product.quantity,
+                )
+        except Exception as e:
+            traceback.print_exc()
+            return OrderMutation(order=None)
+        return OrderMutation(order=order)
 
 
 class ProductMutation(graphene.Mutation):
@@ -96,6 +127,7 @@ class CategoryMutation(SerializerMutation):
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
+    create_order = OrderMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)

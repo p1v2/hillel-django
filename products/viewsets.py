@@ -51,6 +51,8 @@ class ProductViewSet(CacheResponseMixin, ModelViewSet):
     ordering_fields = ("name", "price")
     ordering = ("name",)
 
+    permission_classes = ()
+
     def get_serializer_class(self):
         if self.request.method == "GET":
             return ProductViewSerializer

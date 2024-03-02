@@ -58,11 +58,13 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
     'storages',
+    'corsheaders',
     # Local apps (user-defined)
     "products",
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -343,3 +345,36 @@ STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 PUBLIC_MEDIA_LOCATION = "media"
 MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/{PUBLIC_MEDIA_LOCATION}/"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+# If you need to allow cookies (include credentials) in cross-origin requests,
+# set this to True, and ensure your frontend sends credentials (withCredentials in axios, for example)
+CORS_ALLOW_CREDENTIALS = True
+
+# You might want to specify which headers can be included in requests
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
+# Specify which HTTP methods are allowed
+CORS_ALLOW_METHODS = [
+    "DELETE",
+    "GET",
+    "OPTIONS",
+    "PATCH",
+    "POST",
+    "PUT",
+]
