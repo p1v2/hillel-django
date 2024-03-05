@@ -1,13 +1,16 @@
 import traceback
-
+from rest_framework import serializers
 import graphene
 from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.rest_framework.mutation import SerializerMutation
+from django.contrib.auth.models import User
+from products.models import Product, Category, Order, OrderProduct
+from products.serializers import CategorySerializer, OrderSerializer
+from graphql import GraphQLError
 
-from products.models import Product, Category
-from products.serializers import CategorySerializer
+from graphene_django.forms.mutation import DjangoModelFormMutation
 
 
 class CategoryNode(DjangoObjectType):
@@ -49,6 +52,13 @@ class Query(graphene.ObjectType):
 class ProductType(DjangoObjectType):
     class Meta:
         model = Product
+
+class OrderProductType(DjangoObjectType):
+    class Meta:
+        model = OrderProduct
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
 
 
 class ProductMutation(graphene.Mutation):
@@ -93,9 +103,89 @@ class CategoryMutation(SerializerMutation):
         serializer_class = CategorySerializer
 
 
+class OrderProductMutation(graphene.Mutation):
+
+    class Arguments:
+        order_id = graphene.Int(required=True)
+        product_id =graphene.Int(required=True)
+        quantity = graphene.Int(required=True)
+
+    order_products = graphene.Field(OrderProductType)
+
+    @classmethod
+    def mutate(cls, root, info, order_id, product_id, quantity):
+        order_products = OrderProduct.objects.create(
+            order = Order.objects.get(id=order_id),
+            product = Product.objects.get(id=product_id),
+            quantity = quantity or 1
+        )
+
+        return OrderProductMutation(order_products=order_products)
+
+# class OrderMutation(graphene.Mutation):
+#     class Arguments:
+#         user_id = graphene.Int(required=True)
+#         products = graphene.List(graphene.Int, required=True)
+#
+#     order = graphene.Field(OrderType)
+#
+#     @classmethod
+#     def mutate(cls, root, info, user_id, products):
+#         order = Order.objects.create(
+#             user=user_id,
+#             products=products
+#         )
+#
+#         return OrderMutation(order=order)
+
+
+class OrderType(DjangoObjectType):
+    class Meta:
+        model = Order
+
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+
+
+class OrderMutation(graphene.Mutation):
+    class Arguments:
+        user_id = graphene.ID(required=True)
+        products = graphene.List(graphene.ID, required=True)
+
+    order = graphene.Field(OrderType)
+
+    @classmethod
+    def validate_order(cls, user_id, products):
+        if not user_id:
+            raise Exception("User_id is required")
+        if not products:
+            raise Exception("Products are required")
+    @classmethod
+    def mutate(cls, root, info, user_id, products):
+        try:
+            user = User.objects.get(pk=user_id)
+        except User.DoesNotExist:
+            raise GraphQLEror("User not found")
+        order = Order.objects.create(user=user)
+        if not products:
+            raise GraphQLError("You should provide at least one product")
+        for product_id in products:
+            try:
+                product = Product.objects.get(pk=product_id)
+                OrderProduct.objects.create(order=order, product=product)
+            except Product.DoesNotExist:
+                raise GraphQLError("Product does not exists")
+
+        return OrderMutation(order=order)
+
+
+
 class Mutation(graphene.ObjectType):
     create_product = ProductMutation.Field()
     create_category = CategoryMutation.Field()
+    create_order_product = OrderProductMutation.Field()
+    create_order = OrderMutation.Field()
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
