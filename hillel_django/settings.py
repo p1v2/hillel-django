@@ -58,8 +58,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.telegram',
+    'allauth.socialaccount.providers.twitter',
     'livereload',
     'debug_toolbar',
+    'django_telegram_login',
+    'python_telegram_auth',
     # Local apps (user-defined)
     "products",
 ]
@@ -209,6 +213,7 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'SCOPE': [
@@ -220,6 +225,18 @@ SOCIALACCOUNT_PROVIDERS = {
             'access_type': 'offline',
         },
     },
+    'telegram': {
+        'SCOPE': ['basic_profile'],
+        'AUTH_PARAMS': {'access_type': 'offline'},
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': True
+    },
+    'twitter': {
+        'APP': {
+            'consumer_key': 'bmnY8bXbE0gmXNyK7mclCC46c',
+            'secret': 'dDZfodapwTDPlzXkbX9PN0msnJ461V1cUXDVrjoXErZnDz0oXp',
+        }
+    },
     'github': {
         'SCOPE': [
             'user',
@@ -228,8 +245,18 @@ SOCIALACCOUNT_PROVIDERS = {
     },
 }
 
+
+TELEGRAM_AUTH_PARAMS = {
+    'API_HASH': 'a866d6dff7aad9b00ed8ef67e15fd919',
+    'API_ID': '29592251'
+}
+
+BOT_USERNAME = 'hillel_telegram6_bot'
+BOT_TOKEN = '7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg'
+REDIRECT_URI = 'http://127.0.0.1/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
 
 SOCIALACCOUNT_STORE_TOKENS = True
 
@@ -244,3 +271,10 @@ CACHES = {
         }
     }
 }
+SOCIALACCOUNT_FORMS = {
+    'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
+    'signup': 'allauth.socialaccount.forms.SignupForm',
+}
+
+#bmnY8bXbE0gmXNyK7mclCC46c
+#dDZfodapwTDPlzXkbX9PN0msnJ461V1cUXDVrjoXErZnDz0oXp

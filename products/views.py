@@ -1,14 +1,17 @@
 import requests
 from django.core.cache import cache
 from rest_framework import status
+from django.shortcuts import render
 from rest_framework.decorators import (
     api_view,
     permission_classes,
     authentication_classes,
 )
 from rest_framework.response import Response
-
+from django.shortcuts import redirect
+from allauth.socialaccount.models import SocialAccount, SocialApp
 from products.serializers import RegistrationSerializer
+
 
 
 @api_view(["POST"])
@@ -46,3 +49,21 @@ def github_user_view(request):
     print("From github")
 
     return Response(github_response.json())
+
+@api_view(["GET"])
+@permission_classes([])
+@authentication_classes([])
+def telegram_user_view(request):
+    return render(request, 'telegram_user_view.html')
+bot1=f"hillel_telegram6_bot"
+bot_id = f'7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg'
+
+def telegram_auth_view(request):
+    try:
+        telegram_app = SocialApp.objects.get(provider='telegram')
+    except SocialApp.DoesNotExist:
+        return redirect('/')
+
+    #auth_url = f"https://api.telegram.org/bot7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg/"
+    auth_url = f"https://oauth.telegram.org/auth?bot_id={bot_id}&origin={bot1}&redirect_uri={'127.0.0.1:8000/'}"
+    return redirect(auth_url)
