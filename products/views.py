@@ -1,3 +1,5 @@
+import os
+
 import requests
 from django.core.cache import cache
 from rest_framework import status
@@ -55,8 +57,6 @@ def github_user_view(request):
 @authentication_classes([])
 def telegram_user_view(request):
     return render(request, 'telegram_user_view.html')
-bot1=f"hillel_telegram6_bot"
-bot_id = f'7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg'
 
 def telegram_auth_view(request):
     try:
@@ -65,5 +65,5 @@ def telegram_auth_view(request):
         return redirect('/')
 
     #auth_url = f"https://api.telegram.org/bot7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg/"
-    auth_url = f"https://oauth.telegram.org/auth?bot_id={bot_id}&origin={bot1}&redirect_uri={'127.0.0.1:8000/'}"
+    auth_url = f"https://oauth.telegram.org/auth?bot_id={os.environ.get("TG_AUTH_HASH")}&origin={os.environ.get("TG_AUTH_ID")}&redirect_uri={'127.0.0.1:8000/'}"
     return redirect(auth_url)

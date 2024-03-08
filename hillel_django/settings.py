@@ -233,8 +233,8 @@ SOCIALACCOUNT_PROVIDERS = {
     },
     'twitter': {
         'APP': {
-            'consumer_key': 'bmnY8bXbE0gmXNyK7mclCC46c',
-            'secret': 'dDZfodapwTDPlzXkbX9PN0msnJ461V1cUXDVrjoXErZnDz0oXp',
+            'consumer_key': os.environ.get("TWITTER_KEY")
+            'secret': os.environ.get("TWITTER_SECRET_KEY"),
         }
     },
     'github': {
@@ -247,12 +247,12 @@ SOCIALACCOUNT_PROVIDERS = {
 
 
 TELEGRAM_AUTH_PARAMS = {
-    'API_HASH': 'a866d6dff7aad9b00ed8ef67e15fd919',
-    'API_ID': '29592251'
+    'API_HASH': os.environ.get("TG_AUTH_HASH"),
+    'API_ID': os.environ.get("TG_API_ID")
 }
 
-BOT_USERNAME = 'hillel_telegram6_bot'
-BOT_TOKEN = '7087030155:AAEjbzX8bgOZTeeRuBmbWGjQpgtLDAK1QUg'
+BOT_USERNAME = os.environ.get("TG_AUTH_ID")
+BOT_TOKEN = os.environ.get("TG_AUTH_HASH")
 REDIRECT_URI = 'http://127.0.0.1/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
@@ -275,6 +275,3 @@ SOCIALACCOUNT_FORMS = {
     'disconnect': 'allauth.socialaccount.forms.DisconnectForm',
     'signup': 'allauth.socialaccount.forms.SignupForm',
 }
-
-#bmnY8bXbE0gmXNyK7mclCC46c
-#dDZfodapwTDPlzXkbX9PN0msnJ461V1cUXDVrjoXErZnDz0oXp
