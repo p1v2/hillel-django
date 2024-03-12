@@ -35,6 +35,10 @@ ALLOWED_HOSTS = [
     "b209-188-163-9-200.ngrok-free.app",
 ] + os.environ.get("ALLOWED_HOSTS", "").split(",")
 
+CSRF_TRUSTED_ORIGINS = [
+
+] + os.environ.get("ALLOWED_ORIGINS", "").split(",")
+
 
 # Application definition
 
@@ -51,7 +55,12 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "celery",
-    # Local apps (user-defined)
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.twitter',
     "products",
 ]
 
@@ -64,6 +73,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "hillel_django.urls"
@@ -188,3 +198,6 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS = True
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_QUERY_EMAIL = True

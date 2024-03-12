@@ -1,24 +1,35 @@
+{% load socialaccount %}
 <html>
-<head>
-    <title>Products</title>
-</head>
 <body>
-    <h1>Products</h1>
-    <table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    {% for product in products %}
-        <tr>
-            <td>{{ product.name }}</td>
-            <td>{{ product.price }}</td>
-            <td>{{ product.description }}</td>
-        </tr>
-    {% endfor %}
-    </table>
+<h1>Hillel Django Twitter Auth</h1>
+{% if user.is_authenticated %}
+  {% get_social_accounts user as accounts %}
+  <p>Logged in as {{ user.username }}</p>
+    <br/>
+  <a href="/logout" class="btn">Logout</a>
+  <br/>
+  {% if accounts.twitter %}
+    <div style="padding-left:20px">
+    <p>Twitter account: {{accounts.twitter.0}}</p>
+    <p>Name: {{accounts.twitter.0.extra_data.name}}</p>
+    <p>Image: <img src="{{accounts.twitter.0.extra_data.profile_image_url}}"></p>
+    <p>Created at: {{accounts.twitter.0.extra_data.created_at}}</p>
+    <p>Friends: {{accounts.twitter.0.extra_data.friends_count}}</p>
+    </div>
+  {% else %}
+    <a href="{% provider_login_url "twitter" process="connect" %}">Connect Twitter account</a>
+  {% endif %}
+{% else %}
+    <a href="{% provider_login_url "twitter" %}">Login with Twitter</a>
+{% endif %}
+
+{% for message in messages %}
+  {% if 'success' in message.tags %}
+  <p class="alert alert-success" role="alert"><span style="font-weight:bold">{{ message }}</span></p>
+  {% else %}
+  <p class="alert alert-warning" role="alert"><span style="font-weight:bold">{{ message }}</span></p>
+  {% endif %}
+{% endfor %}
+
 </body>
 </html>
