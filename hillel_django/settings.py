@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from datetime import timedelta
 
 load_dotenv()
 
@@ -172,12 +173,12 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
-CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
 
 CELERY_BEAT_SCHEDULE = {
-    "write_to_sheets": {
-        "task": "products.tasks.every_minute_task",
-        "schedule": 60.0,
+    'gather_and_log_statistics': {
+        'task': 'hillel_django.tasks.gather_and_log_order_statistics',
+        'schedule': timedelta(days=1),
     },
 }
 

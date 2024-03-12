@@ -1,85 +1,24 @@
-from django.core.mail import EmailMessage
+from celery import shared_task
+from datetime import timedelta
+from django.utils import timezone
 
-from google_sheets.client import write_to_sheet
-from hillel_django.celery import app
-from products.models import Order, Product
-
-
-@app.task(bind=True)
-def order_created_task(self, order_id):
-    order = (
-        Order.objects.prefetch_related("products")
-        .select_related("user")
-        .get(id=order_id)
-    )
-
-    message = f"Order {order_id} created!\n"
-
-    for order_product in order.order_products.all():
-        message += f"{order_product.product.name} - {order_product.quantity}\n"
-
-    message += f"User: {order.user.email}"
-
-    html_message = f"""
-    <h1>Order {order_id} created!</h1>
-    <ul>
-    """
-
-    for order_product in order.order_products.all():
-        html_message += (
-            f"<li>{order_product.product.name} - {order_product.quantity}</li>"
-        )
-
-    html_message += f"""
-    </ul>
-    <p>User: {order.user.email}</p>
-    """
-
-    # Send email with attachment
-    message = EmailMessage(
-        "New Order",
-        message,
-        "pavliuk96@gmail.com",
-        [order.user.email],
-    )
-    message.attach(
-        "person.jpeg",
-        open("person.jpeg", "rb").read(),
-        "image/jpeg"
-    )
-    message.send()
+from products import models
+from products.models import Order
+import logging
 
 
-@app.task(bind=True)
-def every_minute_task(self):
-    products = Product.objects.all()
+@shared_task
+def gather_and_log_order_statistics():
+    end_date = timezone.now().replace(hour=10, minute=0, second=0, microsecond=0)
+    start_date = end_date - timedelta(days=1)
 
-    product_data = []
+    orders_count = Order.objects.filter(created_at__gte=start_date, created_at__lt=end_date).count()
 
-    for product in products:
-        product_data.append([product.id, product.name, product.price])
+    top_products = Order.objects.filter(created_at__gte=start_date, created_at__lt=end_date) \
+                       .values('product').annotate(product_count=models.Count('product')).order_by('-product_count')[:3]
 
-    write_to_sheet(product_data)
-
-    return "Done!"
-
-
-@app.task(bind=True)
-def google_sheet_task(self, order_id):
-    order = (
-        Order.objects.prefetch_related("products")
-        .select_related("user")
-        .get(id=order_id)
-    )
-
-    data = []
-    for order_product in order.order_products.all():
-        # Make like this: ["Coca cola - 2 - 200", "Total: 200"]
-        data.append(
-            f"{order_product.product.name} - "
-            f"{order_product.quantity} - "
-            f"{round(order_product.product.price * order_product.quantity)}"
-        )
-        data.append(f"Total: {round(order.total_price)}")
-
-    write_to_sheet(data)
+    logging.info(f"Statistics for {start_date} to {end_date}:")
+    logging.info(f"Total orders created: {orders_count}")
+    logging.info("Top 3 ordered products:")
+    for product in top_products:
+        logging.info(f"Product: {product['product']}, Count: {product['product_count']}")
